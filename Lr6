@@ -1,0 +1,123 @@
+import random
+import hashlib
+
+
+def is_prime(n):
+    if n < 2:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+
+def generate_prime(min_val, max_val):
+    while True:
+        num = random.randint(min_val, max_val)
+        if is_prime(num):
+            return num
+
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+
+def mod_inverse(a, m):
+    def extended_gcd(a, b):
+        if b == 0:
+            return a, 1, 0
+        d, x1, y1 = extended_gcd(b, a % b)
+        x = y1
+        y = x1 - (a // b) * y1
+        return d, x, y
+
+    d, x, y = extended_gcd(a, m)
+    if d != 1:
+        return -1
+    return x % m
+
+
+def generate_dsa_params():
+    q = generate_prime(50, 200)
+
+    p = 2 * q + 1
+    while not is_prime(p):
+        q = generate_prime(50, 200)
+        p = 2 * q + 1
+
+    g = 2
+    while pow(g, q, p) != 1:
+        g += 1
+
+    return p, q, g
+
+
+def generate_dsa_keys(p, q, g):
+    x = random.randint(1, q - 1)
+    y = pow(g, x, p)
+    return (p, q, g, y), x
+
+
+def hash_message(text):
+    h = hashlib.sha256(text.encode('utf-8')).hexdigest()
+    return int(h, 16) % (2 ** 16)
+
+
+def dsa_sign(text, public_key, private_key):
+    p, q, g, y = public_key
+    x = private_key
+
+    h = hash_message(text)
+
+    while True:
+        k = random.randint(1, q - 1)
+        r = pow(g, k, p) % q
+        if r == 0:
+            continue
+
+        k_inv = mod_inverse(k, q)
+        s = (k_inv * (h + x * r)) % q
+        if s == 0:
+            continue
+
+        return r, s
+
+
+def dsa_verify(text, r, s, public_key):
+    p, q, g, y = public_key
+
+    if r <= 0 or r >= q or s <= 0 or s >= q:
+        return False
+
+    h = hash_message(text)
+
+    w = mod_inverse(s, q)
+    u1 = (h * w) % q
+    u2 = (r * w) % q
+    v = ((pow(g, u1, p) * pow(y, u2, p)) % p) % q
+
+    return v == r
+
+
+p, q, g = generate_dsa_params()
+public_key, private_key = generate_dsa_keys(p, q, g)
+print("p = ", p, ", q = ", q, ", g = ", g, ", public_key = ", public_key, ", private_key = ", private_key)
+
+a = 0
+
+while a == 0:
+    text = input()
+    mode = input()
+
+    if mode == "1":
+        r, s = dsa_sign(text, public_key, private_key)
+        print(r)
+        print(s)
+    elif mode == "2":
+        r = int(input())
+        s = int(input())
+        is_valid = dsa_verify(text, r, s, public_key)
+        print(is_valid)
+    a = int(input())
