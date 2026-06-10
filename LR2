@@ -37,10 +37,6 @@ def vernam_encrypt(text, key):
             result += ch
     return result
 
-
-def vernam_decrypt(text, key):
-    return vernam_encrypt(text, key)
-
 a = 0
 while a < 1:
     text = input()
@@ -50,5 +46,5 @@ while a < 1:
     if mode == "1":
         print(vernam_encrypt(text, key))
     elif mode == "2":
-        print(vernam_decrypt(text, key))
+        print(vernam_encrypt(text, key))
     a = int(input())
