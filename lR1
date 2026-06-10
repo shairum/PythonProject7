@@ -1,0 +1,36 @@
+alphabet_lower = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+alphabet_upper = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+
+def shift_text(text, k):
+    result = ""
+    for ch in text:
+        if ch in alphabet_lower:
+            pos = alphabet_lower.index(ch)
+            new_pos = (pos + k) % 33
+            result += alphabet_lower[new_pos]
+        elif ch in alphabet_upper:
+            pos = alphabet_upper.index(ch)
+            new_pos = (pos + k) % 33
+            result += alphabet_upper[new_pos]
+        else:
+            result += ch
+    return result
+
+def encrypt(text, k):
+    return shift_text(text, k)
+
+def decrypt(text, k):
+    return shift_text(text, -k)
+
+a = 0
+
+while(a < 1):
+    text = input()
+    k = int(input())
+    mode = input()
+
+    if mode == "1":
+        print(encrypt(text, k))
+    elif mode == "2":
+        print(decrypt(text, k))
+    a = int(input())
