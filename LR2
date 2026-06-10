@@ -1,0 +1,54 @@
+alphabet_lower = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+alphabet_upper = 'АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+
+
+def char_to_num(ch):
+    if ch in alphabet_lower:
+        return alphabet_lower.index(ch)
+    elif ch in alphabet_upper:
+        return alphabet_upper.index(ch)
+    return -1
+
+
+def num_to_char(num, is_upper):
+    if is_upper:
+        return alphabet_upper[num % 33]
+    else:
+        return alphabet_lower[num % 33]
+
+
+def vernam_encrypt(text, key):
+    result = ""
+    key_index = 0
+    key_len = len(key)
+
+    for ch in text:
+        if ch in alphabet_lower:
+            text_num = char_to_num(ch)
+            key_num = char_to_num(key[key_index % key_len])
+            result += num_to_char(text_num ^ key_num, False)
+            key_index += 1
+        elif ch in alphabet_upper:
+            text_num = char_to_num(ch)
+            key_num = char_to_num(key[key_index % key_len])
+            result += num_to_char(text_num ^ key_num, True)
+            key_index += 1
+        else:
+            result += ch
+    return result
+
+
+def vernam_decrypt(text, key):
+    return vernam_encrypt(text, key)
+
+a = 0
+while a < 1:
+    text = input()
+    key = input()
+    mode = input()
+
+    if mode == "1":
+        print(vernam_encrypt(text, key))
+    elif mode == "2":
+        print(vernam_decrypt(text, key))
+    a = int(input())
