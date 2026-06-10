@@ -1,0 +1,35 @@
+import random
+
+def gcd(a, b):
+    while b != 0:
+        a, b = b, a % b
+    return a
+
+
+def pollard_p_minus_1(n, max_iterations):
+    if n % 2 == 0:
+        return 2
+    if n % 3 == 0:
+        return 3
+
+    a = random.randint(2, n - 2)
+
+    for j in range(2, max_iterations + 1):
+        a = pow(a, j, n)
+        d = gcd(a - 1, n)
+
+        if d > 1 and d < n:
+            return d
+
+    return -1
+
+
+n = int(input())
+max_iter = int(input())
+
+result = pollard_p_minus_1(n, max_iter)
+
+if result == -1:
+    print(result)
+else:
+    print(result)
